@@ -1,0 +1,37 @@
+Deficiencies in HW5
+
+My implementation for the various functions within hw5.ss pass the given 
+test cases.
+
+The only deficiencies that I can find are to do with the use of cons, 
+reusing previously written functions and returning a shallow copy for the
+last expression returning function.
+
+The spec said to limit the number of uses of the cons function, and I believe
+that I did that to the best of my ability, but I used it wherever I felt it
+necessary such as when creating a new listdiff, where we have to keep the
+structure of the pair of elements, and that can only be efficiently taken
+care of using cons. Every ocurrence of cons is in order o create a listdiff
+pairing.
+
+Several of my functions use previously written funcions to reduce the amount
+of code necessary. For example, I use my listdiff function in list->listdiff,
+since they do the same thing wherein we treat the latter function as creating
+a listdiff by unpacking the elements in the given list to be like arguments
+as done in the listdiff function. I also use the boolean funcitons like 
+null-ld? and listdiff? to make sure the inputs are valid. Other instances of
+reuse involve the use of car-ld to get the rest of the elements in the 
+listdiff.
+
+For the expr-returning function I simply take the cons of the actual list
+difference with an empty list to get a valid top-level data matching the given
+listdiff.
+
+I might consider using take as another deficiency but saw it as the best way
+to avoid recursively getting the different elements within the listdiff.
+Take with length-ld gives us the different elements between the first and second
+elements within the listdiff pair.
+
+Even though these might be considered as somewhat deficient, I believe that
+they make the code shorter and get the job done to required sepcifications,
+and in some cases might even be the most efficient way of doing it.

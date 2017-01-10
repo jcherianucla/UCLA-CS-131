@@ -1,0 +1,62 @@
+Problem 1:
+
+We recognize that to convert a homework 1 style grammar, we maintain the 
+first element of the tuple as the start symbolol, and then we move on to
+returning a function as the second element that takes in a non-terminal
+to find all the right hand side's within the homework 1 grammar that correspond
+to this start symbol (this is done by alternate_lists).
+
+Problem 2:
+After recognizing how the problem at hand involved a backtracking nature I
+was able to break the problem down into two key components, that is the 
+matcher itself and the match_element functions. We notice that the nature
+of the problem involves comparing each element in the fragment to its "path"
+to presence if it exists in the grammar's rules' right hand side, and keep
+doing this for every element in the fragment unless we hit a critical point
+wherein we stop moving our "window" for gathering the prefixes, and just
+return the suffix.
+
+In essence this was my reasoning behind the problem, and from its nature we 
+notice that it would involve a lot of backtracking once we found the current
+element, to move onto the next symbol in the rhs to find the next prefix 
+element. In order for this backtracking to work however in a functional style we 
+had to run recursive functions simultaneously which is why I used OCaml's keyword
+"and".
+
+My program can be broken into 3 key components:
+1.) parse_prefix - The main function that just takes in a grammar, and 
+technically takes in the acceptor and fragment to function currie to the
+matcher this function uses to return the derivation.
+
+2.) matcher - High level matcher that takes in the starting symbol, the set of rules,
+the matching rules, the acceptor, derivation (this is what we intend on returning 
+from parse_prefix) and finally the fragment itself. This function is responsible
+at a high level to parse through the rules that match with the starting symbol 
+in the grammar passed. We then break this set of rules into a first rule and
+other rules. Based on this current upper rule, we use our second helper function
+described below, to find all the matching elements within the fragment. If it
+returns a None, then we skip this current rule and move through the other rules;
+else if there is some result, then we return Some result.
+
+3.) match_element - This function takes in all the rules, the current rule and
+the acceptor, derivation and fragment. When we try to match the elements in 
+the rule in the matcher function, we make sure to append to our derivation the
+start for this rule and the rule itself. Thus when we try to match every element
+we see that if the case is simply the rule being an empty list, then we just return
+the empty list, otherwise we break down the fragment into its individual components
+and try to match the current element with the terminating symbol we were looking
+for. If there is a match then we simply continue to trying to match the next
+element in the fragment and continue until we finally hit the point where there
+is either no more (empty list -> acceptor) else a non-terminal symbol, in which 
+case we return the parent matcher with the start now being the nonterminal (like
+going from a start of Expr as original, to now looking at the rules under Term When
+looking for the path for derivation for a number) with the new acceptor now being
+the rest of the current rhs to match with those elements. What this is basically
+doing is once we have found the derivation for the current element in the rhs, we 
+wish to apply our acceptor to the rest of the right hand side for the next element
+in the fragment. That is in a fragment like the example - ["3", "+", "4", "-"], 
+we first find the derivation for "3" in a top down approach from the first element 
+in the rhs for the start symbol Expr, and then perform a horizontal scale approach
+to now move the next element in the current rhs (say "Binop") in order to match with
+the "+" symbol. We do this recursively modifying the acceptor within the match_element
+in order to move our window through the prefixes, stopping to leave only the suffix.
